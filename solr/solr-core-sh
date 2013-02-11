@@ -1,0 +1,16 @@
+#!/bin/bash
+
+SOLR_HOME=/home/solr/sbin
+
+# creates a new Solr core
+if [ "$1" = "" ]; then
+echo -n "Name of core to create: "
+read name
+else
+name=$1
+fi
+
+sudo mkdir -p $SOLR_HOME/solr/$name
+sudo chown solr:solr $SOLR_HOME/solr/$name
+
+curl "http://127.0.0.1:8983/solr/admin/cores?action=CREATE&name=$name&instanceDir=.&dataDir=$name"

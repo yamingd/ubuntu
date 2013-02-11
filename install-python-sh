@@ -1,0 +1,80 @@
+echo "to root path"
+cd /home/software/python
+
+#echo "1. install setuptools"
+#tar -xf setuptools-0.6c11.tar.gz
+#cd setuptools-0.6c11
+#sudo python ez_setup.py
+#cd ..
+
+#echo "2. install pil"
+#sudo easy_install pil
+
+#echo "3. install twisted"
+#sudo easy_install twisted
+
+#echo "4. install lxml"
+#sudo easy_install lxml
+
+echo "5. install pycurl"
+echo "http://www.douban.com/note/205693536/"
+tar -xf curl-7.29.0.tar.gz
+cd curl-7.29.0
+./configure
+make
+sudo make install
+
+cd ..
+
+cd pycurl-7.19.0
+sudo python setup.py install
+cd ..
+
+echo "6. install pip"
+sudo easy_install pip
+
+echo "7. install cjson"
+tar -xf python-cjson-1.0.5.tar.gz
+cd python-cjson-1.0.5
+sudo python setup.py install
+cd ..
+
+echo "8. install jsonlib2"
+sudo easy_install jsonlib2
+
+echo "9. install pylibmc"
+echo "http://www.zh-ang.com/2012/03/28/graphite-loop-optimizations/"
+#tar -xf libmemcached-1.0.16.tar.gz
+#cd libmemcached-1.0.16
+#./configure
+#make
+#sudo make install
+#cd ..
+sudo easy_install pylibmc
+
+echo "10. install redis-py"
+sudo easy_install redis
+
+echo "11. install txamqp"
+sudo easy_install txamqp
+
+echo "12. install amqplib"
+sudo easy_install amqplib
+
+echo "13. install pyyaml"
+sudo apt-get install libyaml-dev
+tar -xf PyYAML-3.09.tar.gz
+cd PyYAML-3.09
+sudo python setup.py install
+cd ..
+
+echo "14. install mmhash"
+cd mmhash-1.336
+sudo python setup.py install
+cd ..
+
+echo "15. install pybeanstalkd"
+tar -xf sophacles-pybeanstalk-44ea619.tar.gz
+cd sophacles-pybeanstalk-44ea619
+sudo python setup.py install
+cd ..

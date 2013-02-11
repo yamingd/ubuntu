@@ -1,0 +1,3 @@
+http://www.percona.com/software/percona-server/downloads
+
+http://www.cnblogs.com/TerryLiang/archive/2011/09/20/2182358.html

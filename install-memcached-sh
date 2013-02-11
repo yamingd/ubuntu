@@ -1,0 +1,55 @@
+
+LIBEVENT_VERSION="libevent-2.0.21-stable"
+MEMCACHED_VERSION="1.4.15"
+
+echo "to root path"
+cd /home/software
+
+echo "create user"
+sudo groupadd memcached
+sudo useradd -m memcached -g memcached
+
+echo "create directory"
+sudo mkdir -p /etc/memcached
+sudo mkdir -p /var/memcached
+sudo chown -R memcached:memcached /var/memcached
+
+echo "install file to /etc/init.d"
+dos2unix memcached/memcached-init
+sudo cp memcached/memcached-init /etc/init.d/memcached
+sudo chmod +x /etc/init.d/memcached
+
+dos2unix memcached/start-memcached
+sudo cp memcached/start-memcached /usr/local/bin/start-memcached
+sudo chmod +x /usr/local/bin/start-memcached
+sudo chown -R memcached:memcached /usr/local/bin/start-memcached
+
+dos2unix memcached/memcached_*.conf
+sudo cp memcached/memcached_*.conf /etc/memcached/
+
+echo "install binary package"
+cd memcached
+rm -fr memcached-${MEMCACHED_VERSION}/*
+rm -fr ${LIBEVENT_VERSION}/*
+
+echo "install libevent"
+tar -zxf ${LIBEVENT_VERSION}.tar.gz
+cd ${LIBEVENT_VERSION}
+./configure
+make
+sudo make install
+
+sudo chown -R memcached:memcached /usr/local/bin/memcached
+cd ..
+
+echo "install memcached"
+tar -zxf memcached-${MEMCACHED_VERSION}.tar.gz
+cd memcached-${MEMCACHED_VERSION}
+./configure
+make
+sudo make install
+
+echo "config services"
+sudo update-rc.d memcached defaults
+
+echo "done"

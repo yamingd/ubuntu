@@ -1,0 +1,49 @@
+#Adding Storage nodes and devices
+
+#1. Use the following command to add the storage hosts.
+
+mogadm host add mogilestorage1 --ip=192.168.32.25 --port=7500 --status=alive
+mogadm host add mogilestorage2 --ip=192.168.32.27 --port=7500 --status=alive
+
+#2. Verify this by using following command
+
+mogadm host list
+
+#3. Adding Device for the Storage host
+
+mogadm device add mogilestorage1 1
+mogadm device add mogilestorage2 2
+
+NOTE: Device ID should be unique, verify this by using following command
+
+mogadm device list
+
+#4. Create Device directory on all Storage Servers.
+
+mkdir -p /var/mogdata/dev1
+mkdir -p /var/mogdata/dev1
+
+#5. Start Storage Server
+
+mogstored --daemon
+
+Testing
+
+1. Create a domain:
+
+mogadm domain add testdomain
+2. Add a class to the domain:
+
+mogadm class add testdomain testclass
+3. Use modtool for adding and retriving the data.
+
+mogtool inject file-name key-name
+mogtool extract key-name file-name
+for large files, >64M
+
+mogtool inject --bigfile file-name key-name
+mogtool extract --bigfile key-name file-name
+for directories
+
+mogtool inject --bigfile dir-name key-name
+mogtool extract --bigfile dir-name file-name

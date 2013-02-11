@@ -1,0 +1,27 @@
+echo "to root path"
+cd /home/software
+
+echo "create user"
+sudo groupadd solr
+sudo useradd -m solr -g solr
+
+echo "create directory"
+sudo mkdir -p /var/solr/logs
+sudo chown -R solr:solr /var/solr
+
+echo "install file to /etc/init.d"
+dos2unix solr/solr-init
+sudo cp solr/solr-init /etc/init.d/solr
+sudo chmod +x /etc/init.d/solr
+
+echo "install sbin"
+sudo cp -fr solr/sbin.zip /home/solr/
+sudo unzip /home/solr/sbin/zip
+sudo rm -fr /home/solr/sbin/logs
+sudo ln -s /var/solr/logs /home/solr/sbin/
+sudo chown -R solr:solr /home/solr/sbin
+
+echo "config services"
+sudo update-rc.d solr defaults
+
+echo "done"

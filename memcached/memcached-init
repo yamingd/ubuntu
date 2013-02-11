@@ -1,0 +1,108 @@
+#! /bin/bash
+### BEGIN INIT INFO
+# Provides:		memcached
+# Required-Start:	$remote_fs $syslog
+# Required-Stop:	$remote_fs $syslog
+# Should-Start:		$local_fs
+# Should-Stop:		$local_fs
+# Default-Start:	2 3 4 5
+# Default-Stop:		0 1 6
+# Short-Description:	Start memcached daemon
+# Description:		Start up memcached, a high-performance memory caching daemon
+### END INIT INFO
+
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/local/bin/memcached
+DAEMONNAME=memcached
+DAEMONBOOTSTRAP=/usr/local/bin/start-memcached
+DESC=memcached
+
+test -x $DAEMON || exit 0
+test -x $DAEMONBOOTSTRAP || exit 0
+
+set -e
+
+. /lib/lsb/init-functions
+
+# Edit /etc/default/memcached to change this.
+ENABLE_MEMCACHED=yes
+test -r /etc/default/memcached && . /etc/default/memcached
+
+FILES=(/etc/memcached/memcached_*.conf);
+# check for alternative config schema
+if [ -r "${FILES[0]}" ]; then
+    CONFIGS=();
+    for FILE in "${FILES[@]}";
+    do
+	# remove prefix and sufix
+	NAME=$(basename "${FILE}" .conf);
+	
+	# check optional second param
+	if [ $# -ne 2 ];
+	then
+	    # add to config array
+	    CONFIGS+=($NAME);
+	elif [ "memcached_$2" == "$NAME" ];
+	then
+	    # use only one memcached
+	    CONFIGS=($NAME);
+	    break;
+	fi;
+    done;
+
+    if [ ${#CONFIGS[@]} == 0 ];
+    then
+	echo "Config not exist for: $2" >&2;
+	exit 1;
+    fi;
+else
+    CONFIGS=(memcached);
+fi;
+
+CONFIG_NUM=${#CONFIGS[@]};
+for ((i=0; i < $CONFIG_NUM; i++)); do
+    NAME=${CONFIGS[${i}]};
+    PIDFILE="/var/run/${NAME}.pid";
+    case "$1" in
+	start)
+	    echo -n "Starting $DESC: "
+	    if [ $ENABLE_MEMCACHED = yes ]; then
+		start-stop-daemon --start --quiet --exec "$DAEMONBOOTSTRAP" -- /etc/memcached/${NAME}.conf $PIDFILE
+		echo "$NAME."
+	    else
+		echo "$NAME disabled in /etc/default/memcached."
+	    fi
+	    ;;
+	stop)
+	    echo -n "Stopping $DESC: "
+	    start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE --exec $DAEMON
+	    echo "$NAME."
+	    rm -f $PIDFILE
+	    ;;
+	
+	restart|force-reload)
+	#
+	#	If the "reload" option is implemented, move the "force-reload"
+	#	option to the "reload" entry above. If not, "force-reload" is
+	#	just the same as "restart".
+	#
+	    echo -n "Restarting $DESC: "
+	    start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE
+	    rm -f $PIDFILE
+	    sleep 1
+	    start-stop-daemon --start --quiet --exec "$DAEMONBOOTSTRAP" -- /etc/memcached/${NAME}.conf $PIDFILE
+	    echo "$NAME."
+	    ;;
+	status)
+	    status_of_proc $DAEMON $NAME
+	    ;;
+	*)
+	    N=/etc/init.d/$DAEMONNAME
+	    echo "Usage: $N {start|stop|restart|force-reload|status}" >&2
+	    exit 1
+	    ;;
+    esac
+done;
+
+exit 0

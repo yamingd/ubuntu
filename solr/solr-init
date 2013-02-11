@@ -1,0 +1,75 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          apache-solr
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: apache-solr init.d dash script for Ubuntu or other *nix.
+# Description:       apache-solr init.d dash script for Ubuntu or other *nix.
+### END INIT INFO
+
+if [ -f /etc/rc.d/init.d/functions ]; then
+	# Source function library.
+	. /etc/rc.d/init.d/functions
+elif [ -f /etc/rc.status ]; then
+	. /etc/rc.status
+	alias success='rc_status -v'
+	alias failure='rc_status -v'
+fi
+
+# Variables
+prog=Solr
+SOLR_HOME=/home/solr/sbin
+JAVA_HOME=/usr/local/jdk
+LOCKFILE=/var/lock/solr
+JAVA_STOP_PORT=8079
+JAVA_OPTIONS=" -DSTOP.PORT=${JAVA_STOP_PORT} -DSTOP.KEY=stopkey -Xmx512M -Xms512M"
+
+start() {
+	[ -e ${LOCKFILE} ] && echo "Solr is already running." && failure && echo && return 1;
+
+	echo -n "Starting $prog... " 
+	cd $SOLR_HOME
+	#$JAVA_HOME/bin/java $JAVA_OPTIONS -jar start.jar 2>&1 | /usr/local/sbin/cronolog $SOLR_HOME/logs/solr_%Y-%m-%d.log >> /dev/null &
+	$JAVA_HOME/bin/java $JAVA_OPTIONS -jar start.jar >> /dev/null &
+	RETVAL=$?
+	[ $RETVAL -ne 0 ] && failure && return $RETVAL
+	[ $RETVAL -eq 0 ] && touch "${LOCKFILE}" && success
+	echo
+	return $RETVAL
+}
+
+stop() {
+	echo -n "Stopping $prog... " 
+	#killproc java
+        cd $SOLR_HOME
+	$JAVA_HOME/bin/java $JAVA_OPTIONS -jar start.jar --stop
+	RETVAL=$?
+	echo
+	[ $RETVAL = 0 ] && rm -f ${LOCKFILE}
+	return $RETVAL
+}
+
+case "$1" in
+start)
+	start
+;;
+stop)
+	stop
+;;
+restart)
+	stop
+	sleep 2
+	start
+;;
+status)
+	status java
+;;
+*)
+	echo "Usage: $0 {start|stop|status}" 
+	exit 1
+;;
+esac
+
+# End /etc/init.d

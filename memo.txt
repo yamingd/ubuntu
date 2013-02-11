@@ -1,0 +1,3 @@
+echo "echo 12000 > /proc/sys/vm/dirty_writeback_centisecs" | sudo sh
+
+http://www.programmer.com.cn/11477/

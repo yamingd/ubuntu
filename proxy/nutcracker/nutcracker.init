@@ -1,0 +1,75 @@
+#! /bin/sh
+#
+# chkconfig: - 55 45
+# description:  Twitter's twemproxy nutcracker
+# processname: nutcracker
+# config: /etc/sysconfig/nutcracker
+
+# Source function library.
+. /lib/lsb/init-functions
+
+USER="nobody"
+OPTIONS="-d -c /etc/nutcracker/nutcracker.yml"
+PIDFILE="/var/run/nutcracker.pid"
+DAEMON="/usr/local/bin/nutcracker"
+
+if [ -f /etc/sysconfig/nutcracker ];then
+    . /etc/sysconfig/nutcracker
+fi
+
+# Check that networking is up.
+if [ "$NETWORKING" = "no" ]
+then
+    exit 0
+fi
+
+RETVAL=0
+prog="nutcracker"
+
+start () {
+    echo -n $"Starting $prog: "
+    start-stop-daemon --start --quiet --umask 007 --pidfile $PIDFILE --exec $DAEMON -- $OPTIONS
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch /var/lock/${prog}
+}
+stop () {
+    echo -n $"Stopping $prog: "
+    start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE --exec $DAEMON
+    RETVAL=$?
+    echo
+    if [ $RETVAL -eq 0 ] ; then
+        rm -f /var/lock/${prog}
+    fi
+}
+
+restart () {
+    stop
+    start
+}
+
+
+# See how we were called.
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  status)
+    status ${prog}
+    ;;
+  restart|reload)
+    restart
+    ;;
+  condrestart)
+    [ -f /var/lock/nutcracker ] && restart || :
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop|status|restart|reload|condrestart}"
+    exit 1
+esac
+
+exit $?
+

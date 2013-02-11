@@ -1,0 +1,9 @@
+*.pyc
+*.pyo
+*.gz
+*.zip
+*.pdf
+*.deb
+*.bin
+*.jar
+*.py

@@ -1,0 +1,22 @@
+VERSION="0.2.3"
+
+#http://twemproxy.googlecode.com/files/nutcracker-0.2.3.tar.gz
+cd proxy
+wget http://twemproxy.googlecode.com/files/nutcracker-${VERSION}.tar.gz
+tar -xf nutcracker-${VERSION}.tar.gz
+cd nutcracker-${VERSION}
+./configure
+make
+sudo make install
+
+sudo cp nutcracker.init /etc/init.d/nutcracker
+dos2unix /etc/init.d/nutcracker
+sudo chmod +x /etc/init.d/nutcracker
+
+mkdir -p /etc/nutcracker
+sudo cp nutcracker-${VERSION}/conf/nutcracker.yml /etc/nutcracker/nutcracker.yml
+
+echo "config services"
+sudo update-rc.d nutcracker defaults
+
+echo "done"

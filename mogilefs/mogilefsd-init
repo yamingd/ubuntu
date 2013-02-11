@@ -1,0 +1,67 @@
+#! /bin/bash
+### BEGIN INIT INFO
+# Provides:		mogilefsd
+# Required-Start:	$remote_fs $syslog
+# Required-Stop:	$remote_fs $syslog
+# Should-Start:		$local_fs
+# Should-Stop:		$local_fs
+# Default-Start:	2 3 4 5
+# Default-Stop:		0 1 6
+# Short-Description:	mogilefsd
+# Description:		mogilefsd    Startup script for the MogileFS tracker
+### END INIT INFO
+
+# Source function library.
+. /lib/lsb/init-functions
+
+# Path to the apachectl script, server binary, and short-form for messages.
+lockfile=${LOCKFILE-/var/lock/mogilefsd}
+RETVAL=0
+
+start() {
+         echo -n $"Starting mogilefsd: "
+         su - mogile -c "/usr/local/bin/mogilefsd -c /etc/mogilefs/mogilefsd.conf --daemon"
+         RETVAL=$?
+         echo
+         [ $RETVAL = 0 ] && touch ${lockfile}
+         return $RETVAL
+}
+stop() {
+         echo -n $"Stopping $prog: "
+         killproc mogilefsd
+         RETVAL=$?
+         echo
+         [ $RETVAL = 0 ] && rm -f ${lockfile}
+}
+reload() {
+     echo -n $"Reloading mogilefsd: "
+     killproc mogilefsd -HUP
+     RETVAL=$?
+     echo
+}
+
+# See how we were called.
+case "$1" in
+   start)
+         start
+         ;;
+   stop)
+         stop
+         ;;
+   status)
+         status mogilefsd
+         RETVAL=$?
+         ;;
+   restart)
+         stop
+         start
+         ;;
+   reload)
+         reload
+         ;;
+   *)
+         echo $"Usage: mogilefsd {start|stop|restart|reload|status}"
+         exit 1
+esac
+
+exit $RETVAL

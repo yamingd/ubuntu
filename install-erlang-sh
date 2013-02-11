@@ -1,0 +1,16 @@
+
+# You will need to make this file executable (chmod u+x) and run it with sudo
+#sudo apt-get -y install build-essential m4 libncurses5-dev libssh-dev unixodbc-dev libgmp3-dev libwxgtk2.8-dev libglu1-mesa-dev fop xsltproc
+
+cd /home/software/erlang
+
+#wget http://www.erlang.org/download/otp_src_R15B03-1.tar.gz
+
+tar -xvzf otp_src_R15B03-1.tar.gz
+
+sudo chmod -R 777 otp_src_R15B03
+
+cd otp_src_R15B03
+./configure
+make
+sudo make install

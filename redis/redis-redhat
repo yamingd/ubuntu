@@ -1,0 +1,56 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:             redis-server
+### END INIT INFO
+
+NAME=redis-server
+DESC=redis-server
+REDIS_CONFIG=/etc/redis/redis.conf
+REDIS_SERVER_BIN=/usr/local/bin/redis-server
+REDIS_CLI_BIN=/usr/local/bin/redis-cli
+
+set -e
+
+# Make sure the binary and the config file are present before proceeding
+test -x $REDIS_SERVER_BIN || exit 0
+
+# Create this file and put in a variable called REDIS_CONFIG, pointing to
+# your Redis configuration file
+[ $REDIS_CONFIG ] || exit 0
+
+# . /lib/lsb/init-functions
+
+RETVAL=0
+
+case "$1" in
+  start)
+    echo -n "Starting $DESC: "
+    $REDIS_SERVER_BIN $REDIS_CONFIG
+    RETVAL=$?
+    echo "$NAME."
+    ;;
+  stop)
+    echo -n "Stopping $DESC: "
+    $REDIS_CLI_BIN shutdown
+    RETVAL=$?
+    echo "$NAME."
+    ;;
+  restart)
+    echo -n "Restarting $DESC: "
+    $REDIS_CLI_BIN shutdown
+    $REDIS_SERVER_BIN $REDIS_CONFIG
+    RETVAL=$?
+    echo "$NAME."
+    ;;
+  status)
+    $REDIS_CLI_BIN info
+    RETVAL=$?
+    ;;
+  *)
+    echo "Usage: redis-server {start|stop|restart|status}"
+    exit 1
+    ;;
+esac
+
+exit $RETVAL

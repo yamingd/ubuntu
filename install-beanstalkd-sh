@@ -1,0 +1,38 @@
+VERSION="1.8"
+
+echo "to root path"
+cd /home/software
+
+echo "create user"
+sudo groupadd beanstalkd
+sudo useradd -m beanstalkd -g beanstalkd
+
+echo "create directory"
+sudo mkdir -p /etc/beanstalkd
+sudo mkdir -p /var/beanstalkd/logs
+
+sudo chown -R beanstalkd:beanstalkd /var/beanstalkd
+sudo chown -R beanstalkd:beanstalkd /etc/beanstalkd
+
+echo "https://github.com/downloads/kr/beanstalkd/beanstalkd-1.8.tar.gz"
+
+cd beanstalkd
+tar -xf beanstalkd-${VERSION}.tar.gz
+cd beanstalkd-${VERSION}
+make CFLAGS=-g
+make CC=clang
+make check
+sudo make install PREFIX=/usr/local
+
+cd /home/software
+dos2unix beanstalkd/beanstalkd.conf
+dos2unix beanstalkd/beanstalkd.init
+chmod +x beanstalkd/beanstalkd.init
+
+sudo cp beanstalkd/beanstalkd.init /etc/init.d/beanstalkd
+sudo cp beanstalkd/beanstalkd.conf /etc/default/beanstalkd
+
+echo "config services beanstalkd"
+sudo update-rc.d beanstalkd defaults
+
+echo "done"

@@ -1,0 +1,38 @@
+
+VERSION="precise"
+
+echo "create user"
+sudo groupadd mysql
+sudo useradd -m mysql -g mysql
+
+echo "create directory"
+sudo mkdir -p /etc/mysql
+sudo mkdir -p /var/mysql
+sudo mkdir -p /var/mysql/tmp
+sudo mkdir -p /var/mysql/data
+sudo mkdir -p /var/mysql/logs
+
+sudo chown -R mysql:mysql /var/mysql
+sudo chown -R mysql:mysql /etc/mysql
+
+echo "install file to /etc/init.d"
+cd /home/software
+
+sudo cp mysql/mysql /etc/init.d/mysql
+sudo chmod +x /etc/init.d/mysql
+
+echo "install my.cnf to /etc/mysql"
+sudo cp mysql/my.cnf /etc/mysql/my.cnf
+
+echo "Percona apt Repository"
+sudo gpg --keyserver hkp://keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A
+sudo gpg -a --export CD2EFD2A | sudo apt-key add -
+
+sudo echo "deb http://repo.percona.com/apt ${VERSION} main" >> /etc/apt/sources.list
+sudo echo "deb-src http://repo.percona.com/apt ${VERSION} main" >> /etc/apt/sources.list
+
+sudo apt-get update
+
+sudo apt-get install percona-server-server-5.5 percona-server-client-5.5
+sudo apt-get install percona-toolkit
+sudo apt-get install libmysqlclient-dev

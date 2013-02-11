@@ -1,0 +1,77 @@
+NGINX_VERSION="1.2.6"
+
+echo "to root path"
+cd /home/software
+
+export CC="  gcc"
+export CFLAGS="  -pipe  -O -W -Wpointer-arith -Wno-unused-parameter -Wunused-function -Wunused-variable -Wunused-value -g"
+
+echo "create user"
+sudo groupadd nginx
+sudo useradd -m nginx -g nginx
+
+echo "create directory"
+sudo mkdir -p /etc/nginx
+sudo mkdir -p /var/nginx/logs
+sudo mkdir -p /var/nginx/proxy
+sudo mkdir -p /var/nginx/tmp/proxy
+sudo mkdir -p /var/nginx/tmp/fastcgi
+
+sudo chown -R nginx:nginx /var/nginx
+sudo chown -R nginx:nginx /etc/nginx
+
+echo "install file to /etc/init.d"
+dos2unix nginx/nginx.init
+sudo cp nginx/nginx.init /etc/init.d/nginx
+sudo chmod +x /etc/init.d/nginx
+
+
+#sudo apt-get install libgeoip1 libgeoip-dev
+
+echo "to nginx folder"
+cd nginx
+
+wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.32.zip
+#wget http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz
+#wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+#gunzip GeoIP.dat.gz
+#wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+#gunzip GeoLiteCity.dat.gz
+#wget http://geolite.maxmind.com/download/geoip/api/c/GeoIP-1.4.8.tar.gz
+
+unzip pcre-8.32.zip
+tar -xvf nginx-${NGINX_VERSION}.tar.gz
+tar -xvf nginx_mogilefs_module-1.0.3.tar.gz
+
+echo "install pcre"
+
+cd pcre-8.32
+./configure
+make
+sudo make install
+
+sudo ldconfig
+
+cd ../nginx-${NGINX_VERSION}
+
+./configure --user=nginx --group=nginx --prefix=/usr/local/nginx-${NGINX_VERSION} --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/nginx/logs/error.log --http-log-path=/var/nginx/logs/access.log --http-client-body-temp-path=/var/nginx/tmp/client_body --http-proxy-temp-path=/var/nginx/tmp/proxy --http-fastcgi-temp-path=/var/nginx/tmp/fastcgi --pid-path=/var/nginx/nginx.pid --lock-path=/var/lock/subsys/nginx --with-http_ssl_module --with-http_realip_module --with-http_addition_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_gzip_static_module --with-http_stub_status_module --with-mail --with-mail_ssl_module --with-http_geoip_module --add-module=../nginx_mogilefs_module-1.0.3
+
+make
+sudo make install
+
+sudo rm /usr/local/sbin/nginx
+sudo ln -s /usr/local/nginx-${NGINX_VERSION}/sbin/nginx /usr/local/sbin/nginx
+
+cd /home/software
+
+sudo cp -f nginx/nginx.conf /etc/nginx/nginx.conf
+sudo mkdir -p /etc/nginx/vhost
+sudo chown -R nginx:nginx /etc/nginx
+
+dos2unix nginx/nginx.logrotate.txt
+sudo cp -f nginx/nginx.logrotate.txt /etc/logrotate.d/nginx
+
+echo "config services"
+sudo update-rc.d nginx defaults
+
+echo "done"

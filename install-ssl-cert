@@ -1,0 +1,4 @@
+apt-get install ssl-cert
+make-ssl-cert generate-default-snakeoil --force-overwrite
+cd /etc/ssl
+cat private/ssl-cert-snakeoil.key certs/ssl-cert-snakeoil.pem > snakeoil.pem

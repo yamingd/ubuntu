@@ -1,0 +1,56 @@
+
+echo "Disable ping from Internet/Intranet by adding the line below to /etc/rc.d/rc.local"
+echo "echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_all" | sudo sh
+
+echo "To reduce SYN Flood attack /etc/sysctl.conf"
+echo "echo \"net.core.netdev_max_backlog = 10240\" >> /etc/sysctl.conf" | sudo sh
+echo "echo \"net.core.somaxconn = 10240\" >> /etc/sysctl.conf" | sudo sh
+
+echo "echo \"net.ipv4.conf.all.accept_redirects = 0\" >> /etc/sysctl.conf" | sudo sh
+echo "echo \"net.ipv4.conf.all.accept_source_route = 0\" >> /etc/sysctl.conf" | sudo sh
+echo "echo \"net.ipv4.conf.all.rp_filter = 1\" >> /etc/sysctl.conf" | sudo sh
+echo "echo \"net.ipv4.conf.all.secure_redirects = 0\" >> /etc/sysctl.conf" | sudo sh
+
+echo "echo \"net.ipv4.conf.default.accept_redirects = 0\" >> /etc/sysctl.conf" | sudo sh
+echo "echo \"net.ipv4.conf.default.accept_source_route = 0\" >> /etc/sysctl.conf" | sudo sh
+echo "echo \"net.ipv4.conf.default.secure_redirects = 0\" >> /etc/sysctl.conf" | sudo sh
+echo "echo \"net.ipv4.conf.default.rp_filter = 1\" >> /etc/sysctl.conf" | sudo sh
+
+echo "echo \"net.ipv4.ip_local_port_range = 1024 65000\" >> /etc/sysctl.conf" | sudo sh
+
+echo "echo \"net.ipv4.icmp_echo_ignore_broadcasts=1\" >> /etc/sysctl.conf" | sudo sh
+echo "echo \"net.ipv4.icmp_echo_ignore_all=1\" >> /etc/sysctl.conf" | sudo sh
+echo "echo \"net.ipv4.icmp_ignore_bogus_error_responses=1\" >> /etc/sysctl.conf" | sudo sh
+
+echo "echo \"net.ipv4.ip_conntrack_max=65535\" >> /etc/sysctl.conf" | sudo sh
+
+echo "echo \"net.ipv4.tcp_syncookies=1\" >> /etc/sysctl.conf" | sudo sh
+echo "echo \"net.ipv4.tcp_syn_retries=3\" >> /etc/sysctl.conf" | sudo sh
+echo "echo \"net.ipv4.tcp_fin_timeout=15\" >> /etc/sysctl.conf" | sudo sh
+echo "echo \"net.ipv4.tcp_synack_retries=1\" >> /etc/sysctl.conf" | sudo sh
+echo "echo \"net.ipv4.route.gc_timeout=100\" >> /etc/sysctl.conf" | sudo sh
+
+echo "echo \"net.ipv4.tcp_keepalive_probes = 5\" >> /etc/sysctl.conf" | sudo sh
+echo "echo \"net.ipv4.tcp_keepalive_time=500\" >> /etc/sysctl.conf" | sudo sh
+
+echo "echo \"net.ipv4.tcp_max_orphans = 60000\" >> /etc/sysctl.conf" | sudo sh
+echo "echo \"net.ipv4.tcp_max_syn_backlog = 8192\" >> /etc/sysctl.conf" | sudo sh
+echo "echo \"net.ipv4.tcp_max_tw_buckets = 5000\" >> /etc/sysctl.conf" | sudo sh
+
+echo "echo \"net.ipv4.tcp_rmem = 4096 4096 16777216\" >> /etc/sysctl.conf" | sudo sh
+echo "echo \"net.ipv4.tcp_wmem = 4096 4096 16777216\" >> /etc/sysctl.conf" | sudo sh
+
+echo "echo \"net.ipv4.tcp_tw_reuse = 1\" >> /etc/sysctl.conf" | sudo sh
+echo "echo \"net.ipv4.tcp_tw_recycle = 1\" >> /etc/sysctl.conf" | sudo sh
+
+echo "echo \"fs.file-max = 70000\" >> /etc/sysctl.conf" | sudo sh
+echo "echo \"vm.overcommit_memory=1\" >> /etc/sysctl.conf" | sudo sh
+
+echo "Add the lines below into file /etc/security/limits.conf"
+echo "echo \"*       hard    rss             10000\" >> /etc/security/limits.conf" | sudo sh
+echo "echo \"*       hard    maxlogins       2\" >> /etc/security/limits.conf" | sudo sh
+echo "echo \"*       hard    core            0\" >> /etc/security/limits.conf" | sudo sh
+echo "echo \"*       soft    nofile   10000\" >> /etc/security/limits.conf" | sudo sh
+echo "echo \"*       hard    nofile   30000\" >> /etc/security/limits.conf" | sudo sh
+
+sudo sysctl -p

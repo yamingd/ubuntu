@@ -1,0 +1,41 @@
+
+REDIS_VERSION="2.6.7"
+
+echo "to root path"
+cd /home/software
+
+echo "create user"
+sudo groupadd redis
+sudo useradd -m redis -g redis
+
+echo "create directory"
+sudo mkdir -p /etc/redis
+sudo mkdir -p /var/redis
+sudo chown -R redis:redis /var/redis
+sudo chown -R redis:redis /etc/redis
+
+echo "install file to /etc/init.d"
+dos2unix redis/redis
+sudo cp redis/redis /etc/init.d/redis
+sudo chmod +x /etc/init.d/redis
+
+dos2unix redis/redis_63790.conf
+sudo cp redis/redis_63790.conf /etc/redis/redis_63790.conf
+
+echo "install binary package"
+cd redis
+rm -fr rdis-${REDIS_VERSION}/*
+
+echo "install redis"
+tar -zxf redis-${REDIS_VERSION}.tar.gz
+cd redis-${REDIS_VERSION}
+./configure
+make
+sudo make install
+
+sudo chown -R redis:redis /usr/local/bin/redis*
+
+echo "config services"
+sudo update-rc.d redis defaults
+
+echo "done"

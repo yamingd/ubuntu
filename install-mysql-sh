@@ -1,0 +1,110 @@
+
+MYSQL_VERSION="5.5.29-rel29.4"
+
+echo "to root path"
+cd /home/software
+
+echo "create user"
+sudo groupadd mysql
+sudo useradd -m mysql -g mysql
+
+echo "create directory"
+sudo mkdir -p /etc/mysql
+sudo mkdir -p /var/mysql
+sudo mkdir -p /var/mysql/tmp
+sudo mkdir -p /var/mysql/data
+sudo mkdir -p /var/mysql/logs
+
+sudo chown -R mysql:mysql /var/mysql
+sudo chown -R mysql:mysql /etc/mysql
+
+echo "install binary package"
+cd mysql
+rm -fr Percona-Server-${MYSQL_VERSION}/*
+
+INSTALL_PATH="/usr/local/mysql"
+DATA_PATH="/var/mysql/data"
+
+sudo apt-get install -f bison
+
+echo "install Percona-Server"
+tar -zxf Percona-Server-${MYSQL_VERSION}.tar.gz
+cd Percona-Server-${MYSQL_VERSION}
+
+echo "install Percona-Server"
+
+CC=gcc CFLAGS="-DBIG_JOINS=1 -DHAVE_DLOPEN=1 -O3" CXX=g++ CXXFLAGS="-DBIG_JOINS=1 -DHAVE_DLOPEN=1 -felide-constructors -fno-rtti -O3"
+
+cmake . \
+  -DCMAKE_BUILD_TYPE:STRING=Release             \
+  -DSYSCONFDIR:PATH=${INSTALL_PATH}            \
+  -DCMAKE_INSTALL_PREFIX:PATH=${INSTALL_PATH}  \
+  -DENABLED_PROFILING:BOOL=ON                   \
+  -DENABLE_DEBUG_SYNC:BOOL=OFF                  \
+  -DMYSQL_DATADIR:PATH=${DATA_PATH}    \
+  -DMYSQL_MAINTAINER_MODE:BOOL=OFF              \
+  -DWITH_EXTRA_CHARSETS:STRING=utf8,gbk,gb2312  \
+  -DWITH_BIG_TABLES:BOOL=ON \
+  -DWITH_FAST_MUTEXES:BOOL=ON \
+  -DENABLE-PROFILING:BOOL=ON \
+  -DWITH_SSL:STRING=bundled                     \
+  -DWITH_UNIT_TESTS:BOOL=OFF                    \
+  -DWITH_ZLIB:STRING=bundled                    \
+  -DWITH_PARTITION_STORAGE_ENGINE:BOOL=ON       \
+  -DWITH_SERVER_SUFFIX=hxsw                        \
+  -DWITH_PLUGINS=heap,csv,partition,innodb_plugin,myisam \
+  -DEFAULT_COLLATION=utf8_general_ci            \
+  -DEFAULT_CHARSET=utf8                            \
+  -DENABLED_ASSEMBLER:BOOL=ON                   \
+  -DENABLED_LOCAL_INFILE:BOOL=ON                \
+  -DENABLED_THREAD_SAFE_CLIENT:BOOL=ON          \
+  -DENABLED_EMBEDDED_SERVER:BOOL=OFF             \
+  -DWITH_CLIENT_LDFLAGS:STRING=all-static                 \
+  -DINSTALL_LAYOUT:STRING=STANDALONE            \
+  -DCOMMUNITY_BUILD:BOOL=ON;
+
+echo "install Percona-Server"
+make
+
+echo "install Percona-Server"
+sudo make install
+
+echo "install HandlerSocket-Plugin-for-MySQL"
+cd storage/HandlerSocket-Plugin-for-MySQL/
+./autogen.sh
+./configure --with-mysql-source=/home/software/mysql/Percona-Server-${MYSQL_VERSION} --with-mysql-bindir=${INSTALL_PATH}/bin/ --with-mysql-plugindir=${INSTALL_PATH}/lib/mysql/plugin
+make
+sudo make install
+
+sudo chown -R mysql:mysql /usr/local/mysql
+
+echo "===================================================="
+echo "config Percona Server"
+echo "===================================================="
+cd /home/software/mysql/Percona-Server-${MYSQL_VERSION}/scripts
+sudo ./mysql_install_db --basedir=${INSTALL_PATH} --datadir=${DATA_PATH} --user=mysql
+
+echo "install file to /etc/init.d"
+cd /home/software
+
+sudo cp mysql/mysql /etc/init.d/mysql
+sudo chmod +x /etc/init.d/mysql
+
+echo "install my.cnf to /etc/mysql"
+sudo cp mysql/my.cnf /etc/mysql/my.cnf
+
+echo "config services"
+sudo update-rc.d mysql defaults
+
+sudo echo "/usr/local/mysql/lib" >> /etc/ld.so.conf.d/mysql.conf
+sudo ldconfig
+
+sudo ln -s /usr/local/mysql/bin/mysql_config /usr/local/bin/mysql_config
+sudo ln -s /usr/local/mysql/bin/mysql /usr/local/bin/mysql
+sudo ln -s /usr/local/mysql/bin/mysqldump /usr/local/bin/mysqldump
+
+sudo service mysql start
+sudo ${INSTALL_PATH}/bin/mysqladmin -u root password 'mysql@pwd'
+sudo ${INSTALL_PATH}/bin/mysqladmin -u root -h 127.0.1.1 password 'mysql@pwd'
+
+echo "done"

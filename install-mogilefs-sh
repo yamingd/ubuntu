@@ -1,0 +1,78 @@
+#https://fedoraproject.org/wiki/Setting_Up_MogileFS
+#http://code.google.com/p/mogilefs/wiki/InstallOnUbuntu
+
+echo "to root path"
+cd /home/software
+
+echo "create user"
+sudo groupadd mogile
+sudo useradd -m mogile -g mogile
+
+echo "1.create directory"
+sudo mkdir -p  /etc/mogilefs
+sudo mkdir -p /var/mogilefs
+sudo mkdir -p /var/mogdata
+
+sudo chown -R mogile:mogile /var/mogdata
+sudo chown -R mogile:mogile /var/mogilefs
+
+
+echo "2.configure"
+cd mogilefs
+dos2unix *.conf
+sudo cp mogilefs.conf /etc/mogilefs
+sudo cp mogstored.conf /etc/mogilefs
+sudo cp mogilefsd.conf /etc/mogilefs
+sudo cp mogtool.conf /etc/mogilefs
+
+echo "3.configure cpan, if you are using it for the first time."
+sudo cpan
+
+echo "4.Install the following perl modules."
+sudo cpan install IO::AIO
+sudo cpan install Linux::AIO
+sudo cpan install ExtUtils::MakeMaker
+sudo cpan install Danga::Socket
+sudo cpan install Gearman::Client
+sudo cpan install Gearman::Server
+sudo cpan install Gearman::Client::Async
+sudo cpan install Net::Netmask
+sudo cpan install Perlbal
+sudo cpan install Sys::Syscall
+sudo cpan install MogileFS::Client
+sudo cpan install DBD::mysql
+
+echo "5.install mogilefs-utils"
+unzip MogileFS-Utils-2.27.zip
+cd MogileFS-Utils-2.27
+perl Makefile.PL
+make
+sudo make install
+cd ..
+
+echo "6.install mogilefs-server"
+unzip MogileFS-Server-2.67.zip
+cd MogileFS-Server-2.67
+perl Makefile.PL
+make
+sudo make install
+cd ..
+
+echo "7.crate the database for MogileFS"
+sudo mysql -u root -p < init-db.sql
+sudo mogdbsetup --dbhost=127.0.0.1 --dbname=mogilefs --dbuser=mogile --dbpassword=mogilefs
+
+echo "8.install services"
+dos2unix mogilefsd-init
+sudo cp mogilefsd-init /etc/init.d/mogilefsd
+sudo chmod +x /etc/init.d/mogilefsd
+
+dos2unix mogstored-init
+sudo cp mogstored-init /etc/init.d/mogstored
+sudo chmod +x /etc/init.d/mogstored
+
+echo "9.config services"
+sudo update-rc.d mogilefsd defaults
+sudo update-rc.d mogstored defaults
+
+echo "done"

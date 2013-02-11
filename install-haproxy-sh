@@ -1,0 +1,28 @@
+echo "to root path"
+cd /home/software
+
+echo "create user"
+sudo groupadd haproxy
+sudo useradd -m haproxy -g haproxy
+
+echo "create directory"
+sudo mkdir -p /etc/haproxy
+
+cd haproxy
+wget http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-1.5-dev17.tar.gz
+tar -xf haproxy-1.5-dev17.tar.gz
+cd haproxy-1.5-dev17
+make TARGET=linux2628 USE_PCRE=1 USE_OPENSSL=1 USE_ZLIB=1
+sudo make install
+
+cd ..
+
+dos2unix haproxy-init
+sudo cp haproxy-init /etc/init.d/haproxy
+sudo chmod a+x /etc/init.d/haproxy
+sudo update-rc.d haproxy defaults
+
+echo "echo \"ENABLED=1\" > /etc/default/haproxy" | sudo sh
+
+dos2unix haproxy.cfg
+sudo cp haproxy.cfg /etc/haproxy

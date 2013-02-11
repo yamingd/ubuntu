@@ -1,0 +1,13 @@
+
+echo "install jdk first"
+
+sudo ln -s /usr/local/jdk1.6.0_29 /usr/local/jdk
+
+dos2unix jdk/java-profile-sh
+sudo cp jdk/java-profile-sh /etc/profile.d/java.sh
+sudo chmod +x /etc/profile.d/java.sh
+
+echo "source java-profile.sh"
+echo ". /etc/profile.d/java.sh" | sudo sh
+
+whereis java

@@ -1,0 +1,44 @@
+system:
+   build-essential
+   jdk
+   users config
+   network config
+
+database:
+   mysql
+   
+cache:
+   memcached
+   libmemcached
+   redis
+   tweproxy
+
+proxy:
+   nginx
+   haproxy
+   varnish
+
+mq:
+   rabbitmq
+   beanstalkd
+
+search:
+   solr
+
+webservers:
+   tomcat
+   tornado
+
+python:
+   twisted
+   pil
+   lxml
+   txamqp
+   amqplib
+   cjson
+   pylibmc
+   mmhash
+   redis-py
+   pycurl
+   jsonlib2
+   webhelpers
