@@ -1,3 +1,15 @@
 echo "echo 12000 > /proc/sys/vm/dirty_writeback_centisecs" | sudo sh
 
 http://www.programmer.com.cn/11477/
+
+http://gm100861.blog.51cto.com/1930562/1021079
+
+http://library.linode.com/server-monitoring/nagios/ubuntu-12.04-precise-pangolin
+
+http://www.telnetport25.com/2012/01/installing-nagios-on-ubuntu-server-11-10-then-monitoring-windows-and-exchange-serverspart-1configuring-ubuntu-for-the-installation-of-nagios-core/
+
+http://library.linode.com/server-monitoring
+
+http://conservatism.iteye.com/blog/718952
+
+http://hi.baidu.com/vdaos/item/4cd9765deeb3083d95eb05c8

@@ -1,0 +1,9 @@
+/opt/couchbase/var/log/couchdb/*.log {
+       weekly
+       rotate 10
+       copytruncate
+       delaycompress
+       compress
+       notifempty
+       missingok
+}

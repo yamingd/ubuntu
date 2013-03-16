@@ -1,4 +1,7 @@
 
+cat /etc/issue
+uname -i
+
 echo "change root's password"
 sudo passwd
 
@@ -10,21 +13,25 @@ echo "set nocompatible" >> $HOME/.vimrc
 
 echo "install build essential for enviroment"
 
-sudo apt-get install -f build-essential
-sudo apt-get install -f linux-headers-`uname -r`
-sudo apt-get install -f libncurses5-dev
-sudo apt-get install -f m4
-sudo apt-get install -f libssl-dev
-sudo apt-get install -f zlib1g zlib1g-dev
-sudo apt-get install -f automake
-sudo apt-get install -f libtool
-sudo apt-get install -f libxslt1.1 libxslt1-dev libxml2-dev
-sudo apt-get install -f ncurses termcap bison flex
-sudo apt-get install -f libfreetype6-dev  libjpeg62-dev liblcms1-dev
-sudo apt-get install -f unzip
+sudo apt-get install -yf build-essential
+sudo apt-get install -yf linux-headers-`uname -r`
+sudo apt-get install -yf libncurses5-dev
+sudo apt-get install -yf m4
+sudo apt-get install -yf libssl-dev
+sudo apt-get install -yf zlib1g zlib1g-dev
+sudo apt-get install -yf automake
+sudo apt-get install -yf libtool
+sudo apt-get install -yf libxslt1.1 libxslt1-dev libxml2-dev
+sudo apt-get install -yf ncurses termcap bison flex
+sudo apt-get install -yf libfreetype6-dev  libjpeg62-dev liblcms1-dev
+sudo apt-get install -yf unzip
+sudo apt-get install -yf libssl0.9.8
+sudo apt-get install -yf dos2unix
 
-sudo ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib/
-sudo ln -s /usr/lib/x86_64-linux-gnu/libz.so /usr/lib/
-sudo ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib/
+sudo ln -s /usr/lib/`uname-i`-linux-gnu/libfreetype.so /usr/lib/
+sudo ln -s /usr/lib/`uname-i`-linux-gnu/libz.so /usr/lib/
+sudo ln -s /usr/lib/`uname-i`-linux-gnu/libjpeg.so /usr/lib/
 
+dos2unix bbexec.sh
+chmod +x bbexec.sh
 sudo cp bbexec.sh /usr/local/bin
